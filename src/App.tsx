@@ -136,7 +136,11 @@ function App() {
   };
 
   const deleteTransaction = (id: number) => {
-    setTransactions(transactions.filter(t => t.id !== id));
+    setRemovingId(id);
+    setTimeout(() => {
+      setTransactions(transactions.filter(t => t.id !== id));
+      setRemovingId(null);
+    }, 300); // Match animation duration
   };
 
   const editTransaction = (transaction: Transaction) => {
@@ -154,6 +158,9 @@ function App() {
   useEffect(() => {
     localStorage.setItem('transactions', JSON.stringify(transactions));
   }, [transactions]);
+
+  // Add new state for animation
+  const [removingId, setRemovingId] = useState<number | null>(null);
 
   return (
     <div className="container">
@@ -201,11 +208,14 @@ function App() {
 
       <div className="transactions-list">
         <h2>Transactions</h2>
-        {currentTransactions.map(transaction => (
+        {currentTransactions.map((transaction, index) => (
           <div 
             key={transaction.id} 
-            className="transaction-item"
+            className={`transaction-item ${removingId === transaction.id ? 'removing' : ''}`}
             data-type={transaction.type}
+            style={{ 
+              '--index': index,
+            } as React.CSSProperties}
           >
             <div className="transaction-info">
               <span className="date">{transaction.date}</span>
