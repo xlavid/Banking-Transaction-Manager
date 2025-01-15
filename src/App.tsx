@@ -1,81 +1,97 @@
 import { useState, useEffect } from 'react'
+import { api } from './services/api'
+import { Transaction } from './types'
 import './App.css'
 
-interface Transaction {
-  id: number;
-  description: string;
-  amount: number;
-  date: string;
-  type: 'deposit' | 'withdrawal';
-}
-
 function App() {
-  const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const saved = localStorage.getItem('transactions');
-    return saved ? JSON.parse(saved) : [
-      {
-        id: 1,
-        description: "Initial Bank Account Opening Deposit",
-        amount: 1000.00,
-        date: "2024-03-20",
-        type: "deposit"
-      },
-      {
-        id: 2,
-        description: "Walmart Grocery Shopping - Weekly Essentials",
-        amount: 85.50,
-        date: "2024-03-21",
-        type: "withdrawal"
-      },
-      {
-        id: 3,
-        description: "Monthly Salary from Tech Corp Inc.",
-        amount: 2500.00,
-        date: "2024-03-22",
-        type: "deposit"
-      },
-      {
-        id: 4,
-        description: "Rent Payment - March 2024",
-        amount: 1200.00,
-        date: "2024-03-23",
-        type: "withdrawal"
-      },
-      {
-        id: 5,
-        description: "Car Insurance - Quarterly Premium",
-        amount: 275.00,
-        date: "2024-03-23",
-        type: "withdrawal"
-      },
-      {
-        id: 6,
-        description: "Freelance Web Development Project",
-        amount: 850.00,
-        date: "2024-03-24",
-        type: "deposit"
-      }
-    ];
-  });
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState<'deposit' | 'withdrawal'>('deposit');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const transactionsPerPage = 5;
 
-  // Add theme state
+  // Theme state (keeping this part unchanged)
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check if user has a saved preference
-    const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
-  // Update theme and save preference
+  // Fetch transactions
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
-    localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
-  }, [isDarkMode]);
+    fetchTransactions();
+  }, []);
+
+  const fetchTransactions = async () => {
+    try {
+      setIsLoading(true);
+      const data = await api.getTransactions();
+      setTransactions(data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch transactions');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (parseFloat(amount) <= 0) {
+      alert('Amount must be greater than 0');
+      return;
+    }
+    
+    if (description.trim().length < 3) {
+      alert('Description must be at least 3 characters long');
+      return;
+    }
+    
+    try {
+      if (editingId !== null) {
+        // Update existing transaction
+        const updatedTransaction = await api.updateTransaction(editingId, {
+          description,
+          amount: parseFloat(amount),
+          type
+        });
+        setTransactions(transactions.map(t => 
+          t.id === editingId ? updatedTransaction : t
+        ));
+        setEditingId(null);
+      } else {
+        // Add new transaction
+        const newTransaction = await api.createTransaction({
+          description,
+          amount: parseFloat(amount),
+          type
+        });
+        setTransactions([...transactions, newTransaction]);
+      }
+
+      // Reset form
+      setDescription('');
+      setAmount('');
+      setType('deposit');
+    } catch (err) {
+      setError('Failed to save transaction');
+      console.error(err);
+    }
+  };
+
+  const deleteTransaction = async (id: number) => {
+    try {
+      await api.deleteTransaction(id);
+      setTransactions(transactions.filter(t => t.id !== id));
+    } catch (err) {
+      setError('Failed to delete transaction');
+      console.error(err);
+    }
+  };
 
   // Sort transactions by date (latest first) and then paginate
   const sortedTransactions = [...transactions].sort((a, b) => 
@@ -95,50 +111,6 @@ function App() {
     setCurrentPage(pageNumber);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Add validation
-    if (parseFloat(amount) <= 0) {
-      alert('Amount must be greater than 0');
-      return;
-    }
-    
-    if (description.trim().length < 3) {
-      alert('Description must be at least 3 characters long');
-      return;
-    }
-    
-    if (editingId !== null) {
-      // Update existing transaction
-      setTransactions(transactions.map(t => 
-        t.id === editingId 
-          ? { ...t, description, amount: parseFloat(amount), type }
-          : t
-      ));
-      setEditingId(null);
-    } else {
-      // Add new transaction
-      const newTransaction: Transaction = {
-        id: Date.now(),
-        description,
-        amount: parseFloat(amount),
-        date: new Date().toISOString().split('T')[0],
-        type
-      };
-      setTransactions([...transactions, newTransaction]);
-    }
-
-    // Reset form
-    setDescription('');
-    setAmount('');
-    setType('deposit');
-  };
-
-  const deleteTransaction = (id: number) => {
-    setTransactions(transactions.filter(t => t.id !== id));
-  };
-
   const editTransaction = (transaction: Transaction) => {
     setDescription(transaction.description);
     setAmount(transaction.amount.toString());
@@ -150,10 +122,13 @@ function App() {
     t.type === 'deposit' ? sum + t.amount : sum - t.amount, 0
   );
 
-  // Save to localStorage when transactions change
-  useEffect(() => {
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-  }, [transactions]);
+  if (isLoading) {
+    return <div className="container">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="container">Error: {error}</div>;
+  }
 
   return (
     <div className="container">
