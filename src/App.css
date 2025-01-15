@@ -1,0 +1,334 @@
+/* Theme Variables */
+:root[data-theme="light"] {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --border-color: #eee;
+  --card-bg: #ffffff;
+  --heading-color: #2c3e50;
+  --description-color: #333;
+  --date-color: #666;
+  --hover-bg: #f8f9fa;
+  --input-bg: #ffffff;
+  --input-border: #ddd;
+  --input-text: #333333;
+  --button-bg: #007bff;
+  --button-text: #ffffff;
+  --button-hover: #0056b3;
+  --button-delete: #dc3545;
+  --button-delete-hover: #c82333;
+  --balance-text: #2c3e50;
+  --deposit-color: #28a745;
+  --withdrawal-color: #dc3545;
+}
+
+:root[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --text-color: #ffffff;
+  --border-color: #333;
+  --card-bg: #2a2a2a;
+  --heading-color: #ffffff;
+  --description-color: #ffffff;
+  --date-color: #aaa;
+  --hover-bg: #333333;
+  --input-bg: #333333;
+  --input-border: #444;
+  --input-text: #ffffff;
+  --button-bg: #0056b3;
+  --button-text: #ffffff;
+  --button-hover: #003d80;
+  --button-delete: #b52a37;
+  --button-delete-hover: #961c27;
+  --balance-text: #ffffff;
+  --deposit-color: #5cd675;
+  --withdrawal-color: #ff4d5e;
+}
+
+/* Base Styles */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 15px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--bg-color);
+}
+
+/* Balance Section */
+.balance {
+  background-color: var(--card-bg);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+}
+
+.balance h2 {
+  margin: 0;
+  font-size: 1.8em;
+  color: var(--balance-text);
+}
+
+/* Transaction Form */
+.transaction-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.transaction-form input,
+.transaction-form select {
+  padding: 8px;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  color: var(--input-text);
+}
+
+.transaction-form input {
+  flex: 2;
+}
+
+.transaction-form select {
+  flex: 1;
+  min-width: 120px;
+}
+
+.transaction-form button {
+  min-width: 120px;
+}
+
+/* Transactions List */
+.transactions-list {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.transactions-list h2 {
+  margin-bottom: 20px;
+  color: var(--heading-color);
+  font-size: 1.5em;
+  text-align: left;
+  font-weight: 600;
+}
+
+/* Transaction Items */
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 10px;
+  gap: 32px;
+  background-color: var(--card-bg);
+}
+
+.transaction-info {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  background-color: transparent;
+}
+
+.date {
+  min-width: 90px;
+  color: var(--date-color);
+  font-size: 0.9em;
+}
+
+.description {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--description-color);
+  font-size: 1em;
+  padding: 0;
+  text-align: left;
+  margin-right: auto;
+}
+
+.amount {
+  min-width: 100px;
+  text-align: right;
+  padding-right: 24px;
+  margin-left: auto;
+  font-weight: 500;
+}
+
+.transaction-item[data-type="deposit"] .amount {
+  color: var(--deposit-color);
+}
+
+.transaction-item[data-type="withdrawal"] .amount {
+  color: var(--withdrawal-color);
+}
+
+/* Transaction Actions */
+.transaction-actions {
+  display: flex;
+  gap: 12px;
+  margin-left: 24px;
+  min-width: 140px;
+  justify-content: flex-end;
+  background-color: transparent;
+}
+
+/* Button Styles */
+button {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--button-hover);
+}
+
+.transaction-actions button:last-child {
+  background-color: var(--button-delete);
+}
+
+.transaction-actions button:last-child:hover {
+  background-color: var(--button-delete-hover);
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.pagination-button {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-color);
+  cursor: pointer;
+  border-radius: 4px;
+  min-width: 40px;
+}
+
+.pagination-button:hover {
+  background-color: var(--hover-bg);
+}
+
+.pagination-button:disabled {
+  background-color: var(--card-bg);
+  color: var(--date-color);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.pagination-button.active {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border-color: var(--button-bg);
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  background-color: var(--card-bg);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .transaction-form {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .transaction-form input,
+  .transaction-form select,
+  .transaction-form button {
+    width: 100%;
+  }
+
+  .transaction-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .amount {
+    margin-left: 0;
+    padding-right: 0;
+  }
+
+  .transaction-actions {
+    margin-top: 8px;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+
+  .transaction-item {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .transaction-info {
+    width: 100%;
+  }
+
+  .transaction-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
