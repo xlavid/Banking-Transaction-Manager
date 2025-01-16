@@ -1,50 +1,51 @@
-# React + TypeScript + Vite
+# Banking transaction management
+![screeshot for the app](image.png)
+## Main features
+- View all transactions with pagination
+- Add a new transaction
+- Edit an existing transaction
+- Delete a transaction
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## How to run the application
+NOTE: In this project, BASE_URL is set to `http://localhost:8080` by default in file `config.ts`, so you need to make sure the [backend service](https://github.com/xlavid/bank-transaction-server) is running before you use the app.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### run app locally
+Node version should be larger than 20
+npm version should be larger than 10
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+use `npm run dev` to run the app locally
 
-- Configure the top-level `parserOptions` property like this:
+### run app in docker
+To run the React application in a Docker container, could run command below:
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+sh start_app.sh
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+After running these commands, you can access the app at `http://localhost:3000`.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Note: Make sure your API URL in the app is configured correctly to reach your backend service from the containerized environment.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## Dependency Purposes
+### Production Dependencies
+- `react`: Core React library for building user interfaces
+- `react-dom`: React's DOM rendering functionality
+
+### Development Dependencies
+#### Build Tools
+- `vite`: Modern build tool and dev server with HMR support
+- `@vitejs/plugin-react-swc`: Fast React compiler for Vite
+
+#### TypeScript Support
+- `typescript`: TypeScript language support and compiler
+- `@types/react`: TypeScript definitions for React
+- `@types/react-dom`: TypeScript definitions for React DOM
+
+#### Code Quality
+- `eslint`: JavaScript/TypeScript linter
+- `eslint-plugin-react-hooks`: ESLint rules for React Hooks
+- `eslint-plugin-react-refresh`: Support for React Fast Refresh
+- `@eslint/js`: JavaScript-specific ESLint rules
+- `globals`: Global variable definitions for ESLint
