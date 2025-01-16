@@ -1,7 +1,18 @@
+// Define the transaction types and result types as enums or string literals
+export type TransactionType = 'PAYMENT' | 'REFUND';
+export type TransactionResult = 'DECLINED' | 'SUCCESS' | 'FAILURE';
+
 export interface Transaction {
-  id: number;
-  description: string;
+  transactionId: string;
+  transactionType: TransactionType;
   amount: number;
-  date: string;
-  type: 'deposit' | 'withdrawal';
-} 
+  currency: string;
+  result: TransactionResult;
+  created: string;
+}
+
+export interface PageResponse {
+  content: Transaction[];
+  totalPages: number;
+  number: number;
+}

@@ -1,42 +1,52 @@
-import { Transaction } from '../types';
-
-const API_BASE_URL = 'http://localhost:3000/api'; // Adjust this to your API URL
+import { Transaction, TransactionResult } from '../types';
+import { BASE_URL } from '../config';
 
 export const api = {
   async getTransactions(): Promise<Transaction[]> {
-    const response = await fetch(`${API_BASE_URL}/transactions`);
+    const response = await fetch(`${BASE_URL}/transactions`);
     if (!response.ok) throw new Error('Failed to fetch transactions');
     return response.json();
   },
 
-  async createTransaction(transaction: Omit<Transaction, 'id' | 'date'>): Promise<Transaction> {
-    const response = await fetch(`${API_BASE_URL}/transactions`, {
+  async createTransaction(transaction: {
+    transactionId: string;
+    transactionType: string;
+    amount: number;
+    currency: string;
+    result: TransactionResult;
+  }): Promise<Transaction> {
+    const response = await fetch(`${BASE_URL}/transactions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(transaction),
     });
+    if (response.status === 409) throw new Error('Transaction ID already exists');
     if (!response.ok) throw new Error('Failed to create transaction');
     return response.json();
   },
 
-  async updateTransaction(id: number, transaction: Partial<Transaction>): Promise<Transaction> {
-    const response = await fetch(`${API_BASE_URL}/transactions/${id}`, {
+  async updateTransaction(id: string, params: {
+    amount: string;
+    currency: string;
+    transactionResult: TransactionResult;
+  }): Promise<Transaction> {
+    const queryParams = new URLSearchParams(params).toString();
+    const response = await fetch(`${BASE_URL}/transactions/${id}?${queryParams}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(transaction),
+      }
     });
     if (!response.ok) throw new Error('Failed to update transaction');
     return response.json();
   },
 
-  async deleteTransaction(id: number): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/transactions/${id}`, {
+  async deleteTransaction(id: string): Promise<void> {
+    const response = await fetch(`${BASE_URL}/transactions/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) throw new Error('Failed to delete transaction');
-  },
+  }
 }; 
